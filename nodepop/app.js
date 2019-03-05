@@ -1,8 +1,16 @@
-var createError = require('http-errors');
+'use strict';
+
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var createError = require('http-errors'); // DIFF
+
+// Creacion de conexion con base de datos
+const db = require('./lib/connectMongoose');
+
+// Cargamos las definiciones de todos nuestros modelos
+require('./models/Anuncio');
 
 var app = express();
 
@@ -15,12 +23,12 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'))); // CAMBIAR esta linea y ponerla antes de los errores
+app.use(express.static(path.join(__dirname, 'public'))); 
 
+// Global Template variables:
+// app.locals.title = 'NodePop';
 
-/**
- * Rutas de nuestra aplicación web
- */
+// Web
 app.use('/', require('./routes/index'));
 
 // catch 404 and forward to error handler

@@ -2,121 +2,53 @@
 
 const express = require('express');
 const router = express.Router();
-const Anuncio = require('../../models/Anuncio');
+const mongoose = require('mongoose');
+const Anuncio = mongoose.model('Anuncio');
 
-/**
- * GET /anuncios
- * Obtener una lista de anuncios
- * 
- */
-router.get('/', async (req, res, next) => {
-  try { // protejemos el código para recoger posibles excepciones
-    
-    // Recogemos valores de entrada
-    const nombre = req.query.nombre;
-    const precio = req.query.precio;
-    const skip = parseInt(req.query.skip);
-    const limit = parseInt(req.query.limit);
-    const fields = req.query.fields;
-    const sort = req.query.sort;
+router.get('/', (req, res, next) => {
 
-    const filter = {};
+  const start = parseInt(req.query.start) || 0;
+  const limit = parseInt(req.query.limit) || 1000; // nuestro api devuelve max 1000 registros
+  const sort = req.query.sort || '_id';
+  const includeTotal = req.query.includeTotal === 'true';
+  const filters = {};
+  if (typeof req.query.tag !== 'undefined') {
+    filters.tags = req.query.tag;
+  }
 
-    if (nombre) {
-      filter.nombre = nombre;
+  if (typeof req.query.venta !== 'undefined') {
+    filters.venta = req.query.venta;
+  }
+
+  if (typeof req.query.precio !== 'undefined' && req.query.precio !== '-') {
+    if (req.query.precio.indexOf('-') !== -1) {
+      filters.precio = {};
+      let rango = req.query.precio.split('-');
+      if (rango[0] !== '') {
+        filters.precio.$gte = rango[0];
+      }
+
+      if (rango[1] !== '') {
+        filters.precio.$lte = rango[1];
+      }
+    } else {
+      filters.precio = req.query.precio;
     }
-
-    if (precio) {
-      filter.precio = precio;
-    }
-
-    // buscamos anuncios en la base de datos
-    const anuncios = await Anuncio.listar(filter, skip, limit, fields, sort);
-
-    res.json({ success: true, results: anuncios });
-
-  } catch(err) {
-    next(err);
-    return;
   }
+
+  if (typeof req.query.nombre !== 'undefined') {
+    filters.nombre = new RegExp('^' + req.query.nombre, 'i');
+  }
+
+  Anuncio.list(filters, start, limit, sort, includeTotal, function (err, anuncios) {
+    if (err) return next(err);
+    res.json({ ok: true, result: anuncios });
+  });
 });
 
-/**
- * GET /anuncios/:id
- * Obtener un anuncio
- */
-router.get('/:id', async (req, res, next) => {
-  try {
-    const id = req.params.id;
-
-    const anuncio = await Anuncio.findById(id).exec();
-    
-    res.json({ success: true, result: anuncio });
-
-  } catch (err) {
-    next(err);
-    return;
-  }
+// Return the list of available tags
+router.get('/tags', function (req, res) {
+  res.json({ ok: true, allowedTags: Anuncio.allowedTags() });
 });
 
-/**
- * POST /anuncios
- * Crear un anuncio
- 
-router.post('/', async (req, res, next) => {
-  try {
-    const data = req.body;
-
-    const agente = new Agente(data);
-
-    const agenteGuardado = await agente.save();    
-
-    res.json({ success: true, result: agenteGuardado });
-
-  } catch(err) {
-    next(err);
-    return;
-  }
-});
-*/
-
-/**
- * PUT /agentes/:id
- * Actualiza un agente
-
-router.put('/:id', async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const data = req.body;
-
-    const agenteActualizado = await Agente.findOneAndUpdate({ _id: id}, data, { new: true }).exec();
-    // { new: true } solicita que retorne el documento actualizado
-
-    res.json({ success: true, result: agenteActualizado });
-
-  } catch (err) {
-    next(err);
-    return;
-  }
-});
- */
-
-/**
- * DELETE /agentes/:id
- * Elimina un agente
-
-router.delete('/:id', async (req, res, next) => {
-  try {
-    const id = req.params.id;
-
-    await Agente.deleteOne({ _id: id }).exec();
-
-    res.json({ success: true });
-
-  } catch (err) {
-    next(err);
-    return;
-  }
-});
- */
 module.exports = router;
