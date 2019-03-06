@@ -10,16 +10,16 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Nodepop' });
 });
 
-router.get('/anuncios', async function (req, res, next) {
+/* router.get('/anuncios', async function (req, res, next) {
   try {
     const filename = path.join(__dirname, '../views/anuncios.html');
     const readme = await new Promise((res, rej) => 
       fs.readFile(filename, 'utf8', (err, data) => err ? rej(err) : res(data) )
     );
-    res.render('anuncios');
+    res.render('anuncios', { anuncios:'quillo' });
   } catch (err) { 
     return next(err); }
-});
+}); */
 
 /* GET Anuncios page. */
 /* router.get('/anuncios', function(req, res, next) {

@@ -11,7 +11,7 @@
     <div class="container">
           <h2>Lista de anuncios</h2>
           <div class="col-md-12">
-            <p class="lead">Listando: </p>
+            <p class="lead">Listando: <%= anuncios.length %> de <%= total %></p>
         </div>
       </div>
       <div class="row">
@@ -26,7 +26,16 @@
               <th>#</th>
             </tr></thead>
             <tbody>
-
+              <% anuncios.forEach(anuncio => { %>
+                <tr>
+                  <td><%= anuncio.nombre %></td>
+                  <td><%= anuncio.venta ? 'Si' : 'No' %></td>
+                  <td style="text-align: right"><%= anuncio.precio / 100 %>€</td>
+                  <td><img src="<%= anuncio.foto %>"></td>
+                  <td><%= anuncio.tags %></td>
+                  <td><%= anuncio._id %></td>
+                </tr>
+      <% }) %>
             </tbody>
           </table>
     
