@@ -7,6 +7,9 @@ a {
   color: #00B7FF;
 }
 
-table th tr td img {
+table tr td img {
   max-height: 25px;
+}
+th {
+  padding: 2px 5px 2px 5px;
 }
