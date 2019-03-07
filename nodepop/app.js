@@ -35,6 +35,9 @@ app.use('/anuncios', require('./routes/anuncios'));
 // API v1
 app.use('/apiv1/anuncios', require('./routes/apiv1/anuncios'));
 
+// README
+app.use('/readme', require('./routes/readme'));
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   const err = new Error('Not Found');
