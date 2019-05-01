@@ -11,7 +11,7 @@ Verifica la cadena de conexión a la base de datos en lib/connectMongoose.js
 ## Puedes utilizar el script de inicialización de la base de datos con:
 
 ```shell
-npm run install_db
+npm run installdb
 ```
 
 ## Arranque
